@@ -42,12 +42,13 @@ function App() {
   }
 
   function handleClick() {
+    console.log('cicked');
     const title = inputRef.current.value.trim();
     if (!title) return;
     const newTodo = {
       title,
       completed: false,
-      id: todos[todos.length - 1].id + 1,
+      id: todos.length ? todos[todos.length - 1].id + 1 : 1,
     };
     mutation.mutate(newTodo);
   }

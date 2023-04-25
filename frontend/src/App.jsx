@@ -1,6 +1,7 @@
 import Todo from './components/Todo';
 import { useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API_DOMAIN } from '../config';
 
 function App() {
   const inputRef = useRef(null);
@@ -9,7 +10,7 @@ function App() {
   const { data: todos, isLoading, error } = useQuery(['todos'], getTodos);
 
   async function getTodos() {
-    const res = await fetch('/api/todo');
+    const res = await fetch(`${API_DOMAIN}/api/todo`);
     const data = await res.json();
     return data;
   }
@@ -31,7 +32,7 @@ function App() {
   });
 
   function postTodo({ title }) {
-    return fetch('/api/todo', {
+    return fetch(`${API_DOMAIN}/api/todo`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

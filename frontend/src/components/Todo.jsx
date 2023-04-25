@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
+import { API_DOMAIN } from '../../config';
 export default function Todo({ todo, id, completed }) {
   const queryClient = useQueryClient();
 
   function deleteTodo() {
-    return fetch(`/api/todo/${id}`, {
+    return fetch(`${API_DOMAIN}/api/todo/${id}`, {
       method: 'DELETE',
     }).then((res) => res.json());
   }
 
   function updateTodo() {
-    return fetch(`/api/todo/${id}`, {
+    return fetch(`${API_DOMAIN}/api/todo/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

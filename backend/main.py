@@ -43,14 +43,15 @@ def get_all_todos():
         return jsonify(json.loads(cached_data.decode('utf-8')))
 
     # get all the todos from the database
-    todos = Todo.query.all()
+    todos = Todo.query.order_by(Todo.id).all()
+    todos_ordered = [todo.to_dict() for todo in todos]
 
     # cache the data in Redis for 60 seconds
     redis_store.set('all_todos', json.dumps(
-        [todo.to_dict() for todo in todos]), ex=60)
+        todos_ordered), ex=60)
 
     # return the todos as JSON
-    return jsonify([todo.to_dict() for todo in todos])
+    return jsonify(todos_ordered)
 
 
 @app.route('/api/todo', methods=['POST'])

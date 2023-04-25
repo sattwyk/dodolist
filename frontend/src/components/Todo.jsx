@@ -5,13 +5,13 @@ export default function Todo({ todo, id, completed }) {
   const queryClient = useQueryClient();
 
   function deleteTodo() {
-    return fetch(`http://localhost:5000/api/todo/${id}`, {
+    return fetch(`/api/todo/${id}`, {
       method: 'DELETE',
     }).then((res) => res.json());
   }
 
   function updateTodo() {
-    return fetch(`http://localhost:5000/api/todo/${id}`, {
+    return fetch(`/api/todo/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -22,15 +22,46 @@ export default function Todo({ todo, id, completed }) {
 
   const deleteMutation = useMutation({
     mutationFn: deleteTodo,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
+    onMutate: async () => {
+      await queryClient.cancelQueries(['todos']);
+      const previousTodos = queryClient.getQueryData(['todos']);
+
+      const filteredTodos = previousTodos.filter((todo) => todo.id !== id);
+
+      queryClient.setQueryData(['todos'], filteredTodos);
+
+      return { previousTodos };
+    },
+    onError: (err, newTodo, context) => {
+      queryClient.setQueryData(['todos'], context.previousTodos);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(['todos']);
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: updateTodo,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
+    onMutate: async () => {
+      await queryClient.cancelQueries(['todos']);
+      const previousTodos = queryClient.getQueryData(['todos']);
+
+      const updatedTodos = previousTodos.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, completed: !todo.completed };
+        }
+        return todo;
+      });
+
+      queryClient.setQueryData(['todos'], updatedTodos);
+
+      return { previousTodos };
+    },
+    onError: (err, newTodo, context) => {
+      queryClient.setQueryData(['todos'], context.previousTodos);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(['todos']);
     },
   });
 
@@ -41,6 +72,7 @@ export default function Todo({ todo, id, completed }) {
         type='radio'
         checked={completed}
         onClick={() => updateMutation.mutate()}
+        readOnly
       />
       <span>{todo}</span>
       <button
@@ -55,6 +87,6 @@ export default function Todo({ todo, id, completed }) {
 
 Todo.propTypes = {
   todo: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   completed: PropTypes.bool.isRequired,
 };

@@ -5,7 +5,7 @@ Tech Used:
 - Forntend
   - React
   - React Query
-Backend:
+- Backend:
   - Flask
   - Redis
   - Postgres

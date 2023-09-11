@@ -2,7 +2,7 @@
 a fun todo list 
 
 Tech Used:
-- Forntend (Typescript):
+- Forntend (Javascript):
   - React
   - Tailwind
   - React Query

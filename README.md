@@ -2,10 +2,11 @@
 a fun todo list 
 
 Tech Used:
-- Forntend
+- Forntend (Typescript):
   - React
+  - Tailwind
   - React Query
-- Backend:
+- Backend (Python):
   - Flask
   - Redis
   - Postgres
